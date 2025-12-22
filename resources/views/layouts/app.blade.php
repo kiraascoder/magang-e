@@ -1,84 +1,42 @@
 <!doctype html>
 <html lang="id">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Dashboard')</title>
-    @vite(['resources/css/app.css','resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-gray-50">
-<div class="min-h-screen flex">
+<body class="bg-gray-50 text-gray-800">
+    <div class="min-h-screen">
 
-    {{-- SIDEBAR --}}
-    <aside class="w-56 bg-gray-100 border-r border-gray-300">
-        <div class="h-14 flex items-center px-4 border-b border-gray-300">
-            <span class="font-semibold text-gray-700">Dashboard</span>
-        </div>
-
-        <nav class="p-2 space-y-2">
-            @php
-                $links = [
-                    ['label'=>'Logbook', 'route'=>'app.logbook'],
-                    ['label'=>'Laporan', 'route'=>'app.laporan'],
-                    ['label'=>'Nilai',   'route'=>'app.nilai'],
-                ];
-
-                // untuk mockup lain (Data/Magang)
-                $linksAlt = [
-                    ['label'=>'Data',  'route'=>'app.data'],
-                    ['label'=>'Magang','route'=>'app.magang'],
-                ];
-
-                // untuk mockup lain (Jurnal/Laporan/Nilai)
-                $linksJurnal = [
-                    ['label'=>'Jurnal', 'route'=>'app.jurnal'],
-                    ['label'=>'Laporan','route'=>'app.laporan'],
-                    ['label'=>'Nilai',  'route'=>'app.nilai'],
-                ];
-
-                // pilih menu sesuai kebutuhan (sementara tampilkan semua biar cepat)
-                $menus = array_merge($links, $linksAlt, $linksJurnal);
-                // hilangkan duplikat label (opsional)
-                $seen = [];
-                $menus = array_values(array_filter($menus, function($m) use (&$seen){
-                    if(isset($seen[$m['label']])) return false;
-                    $seen[$m['label']] = true;
-                    return true;
-                }));
-            @endphp
-
-            @foreach($menus as $m)
-                <a href="{{ route($m['route']) }}"
-                   class="block px-3 py-2 border border-gray-300 bg-gray-200 hover:bg-gray-300
-                          text-gray-800 rounded
-                          {{ request()->routeIs($m['route']) ? 'bg-gray-300 font-semibold' : '' }}">
-                    {{ $m['label'] }}
-                </a>
-            @endforeach
-
-            <form method="POST" action="#" class="pt-2">
-                @csrf
-                <button type="button"
-                        class="w-full flex items-center gap-2 px-3 py-2 text-left text-gray-700 hover:bg-gray-200 rounded">
-                    <span>↩</span>
-                    <span>Logout</span>
-                </button>
-            </form>
-        </nav>
-    </aside>
-
-    {{-- MAIN --}}
-    <div class="flex-1">
         {{-- TOPBAR --}}
-        <header class="h-14 bg-white border-b border-gray-300 flex items-center justify-between px-6">
-            <h1 class="text-xl font-semibold text-gray-800">@yield('page_title', 'Selamat Datang')</h1>
+        <header
+            class="sticky top-0 z-30 h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6">
+            <div class="flex items-center gap-3">
+                {{-- Mobile toggle --}}
+                <button id="sidebarToggle"
+                    class="sm:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 border border-gray-200"
+                    type="button" aria-label="Buka menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor">
+                        <path stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+
+                <span class="font-semibold text-gray-900 tracking-tight">Sistem Pemagangan</span>
+            </div>
 
             <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-600 hidden sm:block">User</span>
-                <div class="w-9 h-9 rounded-full border border-gray-400 flex items-center justify-center">
-                    {{-- icon user --}}
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <div class="hidden sm:flex flex-col leading-tight text-right">
+                    <span class="text-sm font-medium">{{ auth()->user()->name ?? 'User' }}</span>
+                    <span class="text-xs text-gray-500 capitalize">{{ auth()->user()->role ?? '-' }}</span>
+                </div>
+
+                <div class="w-9 h-9 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor">
                         <path stroke-width="2" d="M20 21a8 8 0 0 0-16 0"></path>
                         <circle cx="12" cy="7" r="4" stroke-width="2"></circle>
                     </svg>
@@ -86,12 +44,60 @@
             </div>
         </header>
 
-        {{-- CONTENT --}}
-        <main class="p-6">
-            @yield('content')
-        </main>
+        <div class="flex">
+            {{-- Overlay mobile --}}
+            <div id="sidebarOverlay" class="fixed inset-0 bg-black/30 z-20 hidden sm:hidden"></div>
+
+            <aside class="w-72 sm:w-64 bg-white border-r border-gray-200">
+                <div class="h-14 flex items-center px-4 border-b border-gray-200">
+                    <span class="text-sm font-semibold text-gray-900">Menu</span>
+                </div>
+
+                @include('sidebar.navigation')
+            </aside>
+
+
+            {{-- MAIN --}}
+            <main class="flex-1 min-w-0">
+                <div class="p-4 sm:p-6">
+                    <div class="mb-5">
+                        <h1 class="text-xl sm:text-2xl font-semibold text-gray-900">
+                            @yield('page_title', 'Selamat Datang')
+                        </h1>
+                        <p class="text-sm text-gray-500">
+                            @yield('page_desc', 'Kelola aktivitas pemagangan dengan mudah.')
+                        </p>
+                    </div>
+
+                    <div class="bg-white border border-gray-200 rounded-2xl p-4 sm:p-6 shadow-sm">
+                        @yield('content')
+                    </div>
+                </div>
+            </main>
+
+        </div>
     </div>
 
-</div>
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const openBtn = document.getElementById('sidebarToggle');
+        const closeBtn = document.getElementById('sidebarClose');
+
+        function openSidebar() {
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('hidden');
+        }
+
+        function closeSidebar() {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        }
+
+        if (openBtn) openBtn.addEventListener('click', openSidebar);
+        if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+        if (overlay) overlay.addEventListener('click', closeSidebar);
+    </script>
 </body>
+
 </html>
