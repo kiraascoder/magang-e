@@ -48,4 +48,18 @@ class User extends Authenticatable
     {
         return $this->role === 'mahasiswa';
     }
+    public function penempatanMahasiswa()
+    {
+        return $this->hasMany(Penempatan::class, 'id_mhs', 'id');
+    }
+
+    public function penempatanMentor()
+    {
+        return $this->hasMany(Penempatan::class, 'id_dosen_mentor', 'id');
+    }
+
+    public function penempatanAdmin()
+    {
+        return $this->hasMany(Penempatan::class, 'id_admin', 'id');
+    }
 }

@@ -1,16 +1,9 @@
 @extends('layouts.app')
-
 @section('title', 'Nilai')
 @section('page_title', 'Nilai')
-
+@section('page_desc', 'Input nilai mahasiswa (akan dibuat).')
 @section('content')
-    <div class="space-y-4">
-        {{-- versi mockup yang ada 2 card kecil + 1 card besar --}}
-        <div class="flex gap-4">
-            <div class="w-56 h-12 bg-gray-200 border border-gray-300 rounded"></div>
-            <div class="w-56 h-12 bg-gray-200 border border-gray-300 rounded"></div>
-        </div>
-
-        <div class="w-[520px] max-w-full h-40 bg-gray-200 border border-gray-300 rounded"></div>
+    <div class="p-6 rounded-2xl border border-gray-200 bg-white text-gray-600">
+        Halaman nilai dosen (placeholder). Nanti kita buat tabel nilai + form input.
     </div>
 @endsection

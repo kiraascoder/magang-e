@@ -12,7 +12,7 @@ return new class extends Migration {
             $table->string('nama_instansi');
             $table->text('alamat')->nullable();
             $table->string('kontak')->nullable();
-            $table->string('bidang')->nullable();
+            $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
             $table->timestamps();
         });
     }

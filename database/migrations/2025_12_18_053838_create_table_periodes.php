@@ -9,10 +9,18 @@ return new class extends Migration {
     {
         Schema::create('periodes', function (Blueprint $table) {
             $table->id('id_periode');
-            $table->string('nama_periode');
+
+            $table->string('nama_periode', 150);
             $table->date('tgl_mulai');
             $table->date('tgl_selesai');
+
+            $table->enum('status', ['aktif', 'selesai', 'nonaktif'])->default('nonaktif');
+            $table->string('keterangan', 255)->nullable();
+
             $table->timestamps();
+
+            // opsional: mencegah duplikasi nama periode yang sama
+            // $table->unique('nama_periode');
         });
     }
 

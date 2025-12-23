@@ -70,6 +70,11 @@
                     </div>
 
                     <div class="bg-white border border-gray-200 rounded-2xl p-4 sm:p-6 shadow-sm">
+                        @if (session('success'))
+                            <div class="mb-4 p-3 rounded-lg border border-green-200 bg-green-50 text-green-700 text-sm">
+                                {{ session('success') }}
+                            </div>
+                        @endif
                         @yield('content')
                     </div>
                 </div>
