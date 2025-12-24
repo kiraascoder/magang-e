@@ -387,4 +387,9 @@ class MahasiswaController extends Controller
 
         return back()->with('success', 'Laporan akhir dihapus.');
     }
+     public function nilai()
+    {        
+        return view('mahasiswa.nilai');
+    }
+    
 }
